@@ -1,9 +1,6 @@
-import { createLocalVue, mount } from "@vue/test-utils";
-import Vuex from "vuex";
+import { mount } from "@vue/test-utils";
+import { createStore } from "vuex";
 import BonusDeck from "@/components/BonusDeck";
-
-const localVue = createLocalVue();
-localVue.use(Vuex);
 
 const mockSetBonusDeckIsWin = jest.fn();
 mockSetBonusDeckIsWin.mockReturnValue("setBonusDeckIsWin", true);
@@ -11,18 +8,21 @@ mockSetBonusDeckIsWin.mockReturnValue("setBonusDeckIsWin", true);
 const mockSetBonusDeckPrize = jest.fn();
 mockSetBonusDeckPrize.mockReturnValue("setBonusDeckPrize", 1000);
 
-const store = new Vuex.Store({
+const store = createStore({
   actions: {
     setBonusDeckIsWin: mockSetBonusDeckIsWin,
     setBonusDeckPrize: mockSetBonusDeckPrize,
   },
 });
-
 describe("Test Bonus Deck component", () => {
   let wrapper;
 
   it("should renders correctly", async () => {
-    wrapper = mount(BonusDeck, { localVue, store });
+    wrapper = mount(BonusDeck, {
+      global: {
+        plugins: [store],
+      },
+    });
     await wrapper.vm.$nextTick();
 
     expect(wrapper.exists()).toBe(true);
@@ -30,7 +30,11 @@ describe("Test Bonus Deck component", () => {
   });
 
   it("should initializes bonusDeck and hands correctly", async () => {
-    wrapper = mount(BonusDeck, { localVue, store });
+    wrapper = mount(BonusDeck, {
+      global: {
+        plugins: [store],
+      },
+    });
     await wrapper.vm.$nextTick();
 
     const hand1 = wrapper.vm.hand1;
@@ -51,7 +55,11 @@ describe("Test Bonus Deck component", () => {
   it("generates bonus deck correctly for a win scenario", async () => {
     const expectedSum = 21;
 
-    wrapper = mount(BonusDeck, { localVue, store });
+    wrapper = mount(BonusDeck, {
+      global: {
+        plugins: [store],
+      },
+    });
     // Mock generateBonusDeckChance to return true
     wrapper.vm.generateBonusDeckChance = jest.fn(() => true);
 
@@ -70,7 +78,11 @@ describe("Test Bonus Deck component", () => {
   it("generates bonus deck correctly for a loose scenario", async () => {
     const expectedSum = 21;
 
-    wrapper = mount(BonusDeck, { localVue, store });
+    wrapper = mount(BonusDeck, {
+      global: {
+        plugins: [store],
+      },
+    });
     // Mock generateBonusDeckChance to return true
     wrapper.vm.generateBonusDeckChance = jest.fn(() => false);
 
@@ -84,9 +96,5 @@ describe("Test Bonus Deck component", () => {
 
     expect(wrapper.vm.bonusDeck).toHaveLength(3);
     expect(sum).not.toBe(expectedSum);
-  });
-
-  afterEach(() => {
-    wrapper.destroy();
   });
 });

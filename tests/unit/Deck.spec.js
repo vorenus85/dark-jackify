@@ -1,9 +1,6 @@
-import { createLocalVue, mount } from "@vue/test-utils";
-import Vuex from "vuex";
+import { mount } from "@vue/test-utils";
+import { createStore } from "vuex";
 import Deck from "@/components/Deck";
-
-const localVue = createLocalVue();
-localVue.use(Vuex);
 
 const mockSetMainDeckIsWin = jest.fn();
 mockSetMainDeckIsWin.mockReturnValue("setMainDeckIsWin", true);
@@ -11,7 +8,7 @@ mockSetMainDeckIsWin.mockReturnValue("setMainDeckIsWin", true);
 const mockSetMainDeckPrize = jest.fn();
 mockSetMainDeckPrize.mockReturnValue("setMainDeckPrize", 1000);
 
-const store = new Vuex.Store({
+const store = createStore({
   actions: {
     setMainDeckIsWin: mockSetMainDeckIsWin,
     setMainDeckPrize: mockSetMainDeckPrize,
@@ -22,7 +19,11 @@ describe("Test Deck component", () => {
   let wrapper;
 
   it("should renders ", async () => {
-    wrapper = mount(Deck, { localVue, store });
+    wrapper = mount(Deck, {
+      global: {
+        plugins: [store],
+      },
+    });
 
     await wrapper.vm.$nextTick();
 
@@ -31,7 +32,11 @@ describe("Test Deck component", () => {
   });
 
   it("should initializes data and calls initDeck on mounted", async () => {
-    wrapper = mount(Deck, { localVue, store });
+    wrapper = mount(Deck, {
+      global: {
+        plugins: [store],
+      },
+    });
 
     await wrapper.vm.$nextTick();
 
@@ -54,7 +59,11 @@ describe("Test Deck component", () => {
   });
 
   it("generates deck correctly for a dealer win scenario", async () => {
-    wrapper = mount(Deck, { localVue, store });
+    wrapper = mount(Deck, {
+      global: {
+        plugins: [store],
+      },
+    });
     // Mock generateBonusDeckChance to return true
     wrapper.vm.calcPlayerIsWinOnMainDeck = jest.fn(() => 60);
 
@@ -72,9 +81,5 @@ describe("Test Deck component", () => {
     expect(dealer.number).toBeGreaterThan(hand3.number);
     expect(dealer.number).toBeGreaterThan(hand4.number);
     expect(deckWin).toBe(false);
-  });
-
-  afterEach(() => {
-    wrapper.destroy();
   });
 });

@@ -8,10 +8,6 @@ describe("Test Hand component", () => {
     wrapper = mount(Hand);
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it("should render component with default props", () => {
     // Assert
     expect(wrapper.find(".hand").exists()).toBe(true);
